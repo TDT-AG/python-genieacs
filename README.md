@@ -20,7 +20,6 @@ GNU General Public License v2:
 
 ### Todos
 
-* put functions and variables in a class
 * ensure python 2 and 3 compatibility
 * setup.py
 
