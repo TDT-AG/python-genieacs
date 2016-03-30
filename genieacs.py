@@ -49,6 +49,11 @@ class Connection(object):
         r = self.session.post(request_url, json=data)
         r.raise_for_status()
 
+    def __request_put(self, url, data):
+        request_url = self.base_url + url
+        r = self.session.put(request_url, data)
+        r.raise_for_status()
+
     def task_refresh_object(self, device, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
         data = { "name": "refreshObject",
@@ -61,8 +66,13 @@ class Connection(object):
                  "parameterValues": parameter_values }
         self.__request_post("/devices/" + device + "/tasks", data, conn_request)
 
-    def query_get_presets(self):
-        """Query the GenieACS database for a list of all existing presets"""
+    def preset_get_all(self):
+        """Get all existing presets"""
         r = self.session.get(self.base_url + "/presets")
         r.raise_for_status()
         print(r.text)
+
+    def preset_put(self, name, preset_string):
+        """Create a new preset or update a preset with a given name"""
+        self.__request_put("/presets/" + name, preset_string)
+
