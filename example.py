@@ -14,4 +14,4 @@ acs.task_set_parameter_values("000149-c1500-000149014AF8", [["InternetGatewayDev
 # print all existing presets as a json object
 acs.preset_get_all()
 # create a new preset
-acs.preset_put("Tagging", '{ "weight": 0, "precondition": "{\\"_tags\\":{\\"$ne\\":\\"tagged\\"}}", "configurations": [ { "type": "add_tag", "tag":"tagged" }] }')
+acs.preset_put("Tagging", r'{ "weight": 0, "precondition": "{\"_tags\":{\"$ne\":\"tagged\"}}", "configurations": [ { "type": "add_tag", "tag":"tagged" }] }')
