@@ -32,6 +32,10 @@ The following list contains all possible interactions with the GenieACS REST API
   * by MAC
 * list parameters for a given device
 
+#### Manage devices:
+
+* (delete a given device from the database)
+
 #### Manage tasks:
 
 * list tasks:

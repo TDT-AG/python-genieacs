@@ -54,6 +54,11 @@ class Connection(object):
         r = self.session.put(request_url, data)
         r.raise_for_status()
 
+    def device_delete(self, device):
+        """Delete a given device from the database"""
+        r = self.session.delete(self.base_url + "/devices/" + device)
+        r.raise_for_status()
+
     def task_refresh_object(self, device, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
         data = { "name": "refreshObject",
