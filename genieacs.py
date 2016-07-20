@@ -5,6 +5,7 @@
 # https://github.com/TDT-GmbH/python-genieacs
 
 import requests
+import json
 
 class Connection(object):
     """Connection object to interact with the GenieACS server."""
@@ -54,30 +55,49 @@ class Connection(object):
         r = self.session.put(request_url, data)
         r.raise_for_status()
 
-    def device_delete(self, device):
+    def device_delete(self, device_id):
         """Delete a given device from the database"""
-        r = self.session.delete(self.base_url + "/devices/" + device)
+        r = self.session.delete(self.base_url + "/devices/" + device_id)
         r.raise_for_status()
 
-    def task_refresh_object(self, device, object_name, conn_request=True):
+    def task_refresh_object(self, device_id, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
         data = { "name": "refreshObject",
                  "objectName": object_name }
-        self.__request_post("/devices/" + device + "/tasks", data, conn_request)
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
-    def task_set_parameter_values(self, device, parameter_values, conn_request=True):
+    def task_set_parameter_values(self, device_id, parameter_values, conn_request=True):
         """Create a setParameterValues task for a given device"""
         data = { "name": "setParameterValues",
                  "parameterValues": parameter_values }
-        self.__request_post("/devices/" + device + "/tasks", data, conn_request)
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
-    def preset_get_all(self):
-        """Get all existing presets"""
+    def preset_create(self, preset_name, data):
+        """Create a new preset or update a preset with a given name"""
+        self.__request_put("/presets/" + preset_name, data)
+
+    def preset_create_all_from_file(self, filename):
+        """Create all presets contained in a json file"""
+        f = open(filename, 'r')
+        data = json.load(f)
+        f.close()
+        for preset in data:
+            preset_name = preset["_id"]
+            del preset["_id"]
+            self.__request_put("/presets/" + preset_name, json.dumps(preset))
+
+    def preset_get_all(self, filename):
+        """Get all existing presets as a json object, optionally write them to a file"""
         r = self.session.get(self.base_url + "/presets")
         r.raise_for_status()
-        print(r.text)
+        data = r.json()
+        if filename is not None:
+            f = open(filename, 'w')
+            json.dump(data, f)
+            f.close()
+        return data
 
-    def preset_put(self, name, preset_string):
-        """Create a new preset or update a preset with a given name"""
-        self.__request_put("/presets/" + name, preset_string)
-
+    def preset_delete(self, preset_name):
+        """Delete a given preset"""
+        r = self.session.delete(self.base_url + "/presets/" + preset_name)
+        r.raise_for_status()

@@ -59,8 +59,10 @@ The following list contains all possible interactions with the GenieACS REST API
 #### Manage presets:
 
 * (list all presets)
+* (write all presets to a file)
 * (create or update a preset)
-* delete a preset
+* (create all presets from a file)
+* (delete a preset)
 
 #### Manage files:
 
