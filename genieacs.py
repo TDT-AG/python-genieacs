@@ -86,7 +86,7 @@ class Connection(object):
             del preset["_id"]
             self.__request_put("/presets/" + preset_name, json.dumps(preset))
 
-    def preset_get_all(self, filename):
+    def preset_get_all(self, filename=None):
         """Get all existing presets as a json object, optionally write them to a file"""
         r = self.session.get(self.base_url + "/presets")
         r.raise_for_status()
