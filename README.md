@@ -64,6 +64,14 @@ The following list contains all possible interactions with the GenieACS REST API
 * (create all presets from a file)
 * (delete a preset)
 
+#### Manage objects:
+
+* (list all objects)
+* (write all objects to a file)
+* create or update an object
+* (create all objects from a file)
+* (delete an object)
+
 #### Manage files:
 
 * list files

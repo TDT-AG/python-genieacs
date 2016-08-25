@@ -60,6 +60,8 @@ class Connection(object):
         r = self.session.delete(self.base_url + "/devices/" + device_id)
         r.raise_for_status()
 
+    ##### methods for tasks #####
+
     def task_refresh_object(self, device_id, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
         data = { "name": "refreshObject",
@@ -71,6 +73,8 @@ class Connection(object):
         data = { "name": "setParameterValues",
                  "parameterValues": parameter_values }
         self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    ##### methods for presets #####
 
     def preset_create(self, preset_name, data):
         """Create a new preset or update a preset with a given name"""
@@ -100,4 +104,32 @@ class Connection(object):
     def preset_delete(self, preset_name):
         """Delete a given preset"""
         r = self.session.delete(self.base_url + "/presets/" + preset_name)
+        r.raise_for_status()
+
+    ##### methods for objects #####
+
+    def object_create_all_from_file(self, filename):
+        """Create all objects contained in a json file"""
+        f = open(filename, 'r')
+        data = json.load(f)
+        f.close()
+        for gobject in data:
+            object_name = gobject["_id"]
+            del gobject["_id"]
+            self.__request_put("/objects/" + object_name, json.dumps(gobject))
+
+    def object_get_all(self, filename=None):
+        """Get all existing objects as a json object, optionally write them to a file"""
+        r = self.session.get(self.base_url + "/objects")
+        r.raise_for_status()
+        data = r.json()
+        if filename is not None:
+            f = open(filename, 'w')
+            json.dump(data, f)
+            f.close()
+        return data
+
+    def object_delete(self, object_name):
+        """Delete a given object"""
+        r = self.session.delete(self.base_url + "/objects/" + object_name)
         r.raise_for_status()
