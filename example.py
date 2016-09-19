@@ -23,6 +23,8 @@ for preset in preset_data:
 # create all presets from the file
 acs.preset_create_all_from_file('presets.json')
 
+# create a new object
+acs.object_create("CreatedObject", r'{"Param1": "Value1", "Param2": "Value2", "_keys":["Param1"]}')
 # write all existing objects to a file and store them in a json object
 object_data = acs.object_get_all('objects.json')
 # delete all objects
@@ -30,6 +32,9 @@ for gobject in object_data:
     acs.object_delete(gobject["_id"])
 # create all objects from the file
 acs.object_create_all_from_file('objects.json')
+
+# delete a file from the database
+acs.file_delete("Test1")
 
 # delete the device from the database
 acs.device_delete("000149-c1500-000149014AF8")

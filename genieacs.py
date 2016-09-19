@@ -108,6 +108,10 @@ class Connection(object):
 
     ##### methods for objects #####
 
+    def object_create(self, object_name, data):
+        """Create a new object or update an object with a given name"""
+        self.__request_put("/objects/" + object_name, data)
+
     def object_create_all_from_file(self, filename):
         """Create all objects contained in a json file"""
         f = open(filename, 'r')
@@ -132,4 +136,11 @@ class Connection(object):
     def object_delete(self, object_name):
         """Delete a given object"""
         r = self.session.delete(self.base_url + "/objects/" + object_name)
+        r.raise_for_status()
+
+    ##### methods for files #####
+
+    def file_delete(self, filename):
+        """Delete a given file"""
+        r = self.session.delete(self.base_url + "/files/" + filename)
         r.raise_for_status()

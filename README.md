@@ -68,7 +68,7 @@ The following list contains all possible interactions with the GenieACS REST API
 
 * (list all objects)
 * (write all objects to a file)
-* create or update an object
+* (create or update an object)
 * (create all objects from a file)
 * (delete an object)
 
@@ -76,5 +76,5 @@ The following list contains all possible interactions with the GenieACS REST API
 
 * list files
 * upload or overwrite a file
-* delete an uploaded file
+* (delete an uploaded file)
 * get one or all uploaded files
