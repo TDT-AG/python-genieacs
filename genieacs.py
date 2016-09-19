@@ -74,6 +74,18 @@ class Connection(object):
                  "parameterValues": parameter_values }
         self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
+    ##### methods for tags ######
+
+    def tag_assign(self, device_id, tag_name):
+        """Assign a tag to a device"""
+        self.__request_post("/devices/" + device_id + "/tags/" + tag_name, None, False)
+
+    def tag_remove(self, device_id, tag_name):
+        """Remove a tag from a device"""
+        r = self.session.delete(self.base_url + "/devices/" + device_id + "/tags/" + tag_name)
+        r.raise_for_status()
+
+
     ##### methods for presets #####
 
     def preset_create(self, preset_name, data):

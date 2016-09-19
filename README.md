@@ -55,8 +55,8 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Manage tags:
 
-* assign a tag to a device
-* remove a tag from a device
+* (assign a tag to a device)
+* (remove a tag from a device)
 
 #### Manage presets:
 

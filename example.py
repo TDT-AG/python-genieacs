@@ -33,6 +33,11 @@ for gobject in object_data:
 # create all objects from the file
 acs.object_create_all_from_file('objects.json')
 
+# assign a tag to a device
+acs.tag_assign("000149-Kananga-P15", "tagged")
+# remove a tag from a device
+acs.tag_remove("000149-Kananga-P15", "tagged")
+
 # delete a file from the database
 acs.file_delete("Test1")
 
