@@ -61,6 +61,20 @@ class Connection(object):
         r.raise_for_status()
 
     ##### methods for tasks #####
+    def task_factory_reset(self, device_id, conn_request=True):
+        """Create a factoryReset task for a given device"""
+        data = { "name": "factoryReset"}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_reboot(self, device_id, conn_request=True):
+        """Create a reboot task for a given device"""
+        data = { "name": "reboot"}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_add_object(self, device_id, object_name, object_path, conn_request=True):
+        """Create an addObject task for a given device"""
+        data = { "name": "addObject", object_name : object_path}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
     def task_refresh_object(self, device_id, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
@@ -73,6 +87,33 @@ class Connection(object):
         data = { "name": "setParameterValues",
                  "parameterValues": parameter_values }
         self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_get_parameter_values(self, device_id, parameter_names, conn_request = True):
+        """Create a getParameterValues task for a given device"""
+        data = { "name": "getParameterValues",
+                "parameterNames": parameter_names}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_delete(self, task_id, conn_request=True):
+        """Delete a Task for a given device"""
+        # Warning: Error if task_id doesn't exist
+        r = self.session.delete(self.base_url + "/tasks/" + task_id)
+        r.raise_for_status()
+
+
+    def task_get_all(self, device_id, filename = None, conn_request=True):
+        """Create all tasks from a given device contained in a json file"""
+        quoted_id = requests.utils.quote("{\"device\":\"" + device_id + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/tasks/" + "?query=" + quoted_id)
+        r.raise_for_status()
+        data = r.json()
+        if filename is not None:
+            f = open(filename, 'w')
+            json.dump(data, f)
+            f.close()
+        return data
+
+
 
     ##### methods for tags ######
 

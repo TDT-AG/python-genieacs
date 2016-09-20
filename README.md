@@ -45,13 +45,13 @@ The following list contains all possible interactions with the GenieACS REST API
 * create a task for a given device
   * (refreshObject)
   * (setParameterValues)
-  * getParameterValues
-  * addObject
-  * reboot
-  * factoryReset
+  * (getParameterValues)
+  * (addObject)
+  * (reboot)
+  * (factoryReset)
   * download
 * retry a faulty task at the next inform
-* delete a given task
+* (delete a given task)
 
 #### Manage tags:
 

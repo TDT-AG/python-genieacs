@@ -12,6 +12,21 @@ acs = genieacs.Connection("tr069.tdt.de", ssl=True, auth=True, user="tdt", passw
 acs.task_refresh_object("000149-c1500-000149014AF8", "InternetGatewayDevice.DeviceInfo.")
 # set a device parameter
 acs.task_set_parameter_values("000149-c1500-000149014AF8", [["InternetGatewayDevice.BackupConfiguration.FileList", "backup.cfg"]])
+# get a device parameter
+acs.task_get_parameter_values("000149-c1500-000149014AF8", [["InternetGatewayDevice.BackupConfiguration.FileList"]])
+# factory reset a device
+acs.task_factory_reset("000149-c1500-000149014AF8")
+# reboot a device
+acs.task_reboot("000149-c1500-000149014AF8")
+# add an object to a device
+acs.task_add_object("000149-Kananga-P15", "VPNObject", [["InternetGatewayDevice.X_TDT-DE_OpenVPN"]])
+
+# write all existing tasks of a given device to a file and store them in a json object
+task_data = acs.task_get_all("000149-c1500-000149014AF8", "tasks.json")
+# delete a task
+## Warning: Error if task_id doesn't exist
+acs.task_delete("57e0d4bedbe656c46d7198da")
+
 
 # create a new preset
 acs.preset_create("Tagging", r'{ "weight": 0, "precondition": "{\"_tags\":{\"$ne\":\"tagged\"}}", "configurations": [ { "type": "add_tag", "tag":"tagged" }] }')
