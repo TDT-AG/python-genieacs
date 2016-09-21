@@ -55,26 +55,14 @@ class Connection(object):
         r = self.session.put(request_url, data)
         r.raise_for_status()
 
+    ##### methods for devices #####
+
     def device_delete(self, device_id):
         """Delete a given device from the database"""
         r = self.session.delete(self.base_url + "/devices/" + device_id)
         r.raise_for_status()
 
     ##### methods for tasks #####
-    def task_factory_reset(self, device_id, conn_request=True):
-        """Create a factoryReset task for a given device"""
-        data = { "name": "factoryReset"}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
-
-    def task_reboot(self, device_id, conn_request=True):
-        """Create a reboot task for a given device"""
-        data = { "name": "reboot"}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
-
-    def task_add_object(self, device_id, object_name, object_path, conn_request=True):
-        """Create an addObject task for a given device"""
-        data = { "name": "addObject", object_name : object_path}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
     def task_refresh_object(self, device_id, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
@@ -94,12 +82,36 @@ class Connection(object):
                 "parameterNames": parameter_names}
         self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
+    def task_add_object(self, device_id, object_name, object_path, conn_request=True):
+        """Create an addObject task for a given device"""
+        data = { "name": "addObject", object_name : object_path}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_reboot(self, device_id, conn_request=True):
+        """Create a reboot task for a given device"""
+        data = { "name": "reboot"}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_factory_reset(self, device_id, conn_request=True):
+        """Create a factoryReset task for a given device"""
+        data = { "name": "factoryReset"}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_download(self, device_id, file_id, file_name, conn_request=True):
+        """Create a download task for a given device"""
+        data = { "name": "download", "file": file_id, "filename": file_name}
+        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+
+    def task_retry(self, task_id, conn_request=True):
+        "Retry a faulty task at the next inform"
+        r = self.session.post(self.base_url + "/tasks/" + task_id + "/retry")
+        r.raise_for_status()
+
     def task_delete(self, task_id, conn_request=True):
         """Delete a Task for a given device"""
         # Warning: Error if task_id doesn't exist
         r = self.session.delete(self.base_url + "/tasks/" + task_id)
         r.raise_for_status()
-
 
     def task_get_all(self, device_id, filename = None, conn_request=True):
         """Create all tasks from a given device contained in a json file"""
@@ -197,3 +209,14 @@ class Connection(object):
         """Delete a given file"""
         r = self.session.delete(self.base_url + "/files/" + filename)
         r.raise_for_status()
+
+    def file_get_all(self,  filename=None):
+        """Get all files as a json object, optionally write them to a file"""
+        r = self.session.get(self.base_url + "/files")
+        r.raise_for_status()
+        data = r.json()
+        if filename is not None:
+            f = open(filename, 'w')
+            json.dump(data, f)
+            f.close()
+        return data
