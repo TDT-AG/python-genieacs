@@ -21,13 +21,13 @@ acs.task_reboot("000149-c1500-000149014AF8")
 # add an object to a device
 acs.task_add_object("000149-Kananga-P15", "VPNObject", [["InternetGatewayDevice.X_TDT-DE_OpenVPN"]])
 # download a file
-acs.task_download("000149-Kananga-P15", "firmware.img", "DownloadedFirmware.img")
+acs.task_download("000149-Kananga-P15", "9823de165bb983f24f782951", "Firmware.img")
 # retry a faulty task
 acs.task_retry("9h4769svl789kjf984ll")
 
 
-# write all existing tasks of a given device to a file and store them in a json object
-task_data = acs.task_get_all("000149-c1500-000149014AF8", "tasks.json")
+# print all tasks of a given device
+print(acs.task_get_all("000149-Kananga-P15"))
 # delete a task
 acs.task_delete("9h4769svl789kjf984ll")
 
@@ -57,10 +57,10 @@ acs.tag_assign("000149-Kananga-P15", "tagged")
 # remove a tag from a device
 acs.tag_remove("000149-Kananga-P15", "tagged")
 
-# get all files from the database, write them to a file and store them in a json object
-acs.file_get_all ("files.json")
+# print all existing files in the database
+print(acs.file_get_all())
 # delete a file from the database
-acs.file_delete("OldFirmware.h")
+acs.file_delete("Firmware.img")
 
 # delete the device from the database
 acs.device_delete("000149-c1500-000149014AF8")

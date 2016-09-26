@@ -40,8 +40,8 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Manage tasks:
 
-* list tasks:
-  * filtered by device
+* (list tasks:)
+  * (filtered by device)
 * (create a task for a given device)
   * (refreshObject)
   * (setParameterValues)
@@ -76,7 +76,6 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Manage files:
 
-* list files
+* list all files
 * upload or overwrite a file
 * (delete an uploaded file)
-* get one or all uploaded files

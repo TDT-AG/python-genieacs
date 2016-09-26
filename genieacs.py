@@ -64,6 +64,14 @@ class Connection(object):
 
     ##### methods for tasks #####
 
+    def task_get_all(self, device_id):
+        """Get all existing tasks of a given device"""
+        quoted_id = requests.utils.quote("{\"device\":\"" + device_id + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/tasks/" + "?query=" + quoted_id)
+        r.raise_for_status()
+        data = r.json()
+        return data
+
     def task_refresh_object(self, device_id, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
         data = { "name": "refreshObject",
@@ -97,35 +105,20 @@ class Connection(object):
         data = { "name": "factoryReset"}
         self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
-    def task_download(self, device_id, file_id, file_name, conn_request=True):
+    def task_download(self, device_id, file_id, filename, conn_request=True):
         """Create a download task for a given device"""
-        data = { "name": "download", "file": file_id, "filename": file_name}
+        data = { "name": "download", "file": file_id, "filename": filename}
         self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
 
-    def task_retry(self, task_id, conn_request=True):
+    def task_retry(self, task_id):
         "Retry a faulty task at the next inform"
         r = self.session.post(self.base_url + "/tasks/" + task_id + "/retry")
         r.raise_for_status()
 
-    def task_delete(self, task_id, conn_request=True):
+    def task_delete(self, task_id):
         """Delete a Task for a given device"""
-        # Warning: Error if task_id doesn't exist
         r = self.session.delete(self.base_url + "/tasks/" + task_id)
         r.raise_for_status()
-
-    def task_get_all(self, device_id, filename = None, conn_request=True):
-        """Create all tasks from a given device contained in a json file"""
-        quoted_id = requests.utils.quote("{\"device\":\"" + device_id + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/tasks/" + "?query=" + quoted_id)
-        r.raise_for_status()
-        data = r.json()
-        if filename is not None:
-            f = open(filename, 'w')
-            json.dump(data, f)
-            f.close()
-        return data
-
-
 
     ##### methods for tags ######
 
@@ -138,8 +131,18 @@ class Connection(object):
         r = self.session.delete(self.base_url + "/devices/" + device_id + "/tags/" + tag_name)
         r.raise_for_status()
 
-
     ##### methods for presets #####
+
+    def preset_get_all(self, filename=None):
+        """Get all existing presets as a json object, optionally write them to a file"""
+        r = self.session.get(self.base_url + "/presets")
+        r.raise_for_status()
+        data = r.json()
+        if filename is not None:
+            f = open(filename, 'w')
+            json.dump(data, f)
+            f.close()
+        return data
 
     def preset_create(self, preset_name, data):
         """Create a new preset or update a preset with a given name"""
@@ -155,9 +158,16 @@ class Connection(object):
             del preset["_id"]
             self.__request_put("/presets/" + preset_name, json.dumps(preset))
 
-    def preset_get_all(self, filename=None):
-        """Get all existing presets as a json object, optionally write them to a file"""
-        r = self.session.get(self.base_url + "/presets")
+    def preset_delete(self, preset_name):
+        """Delete a given preset"""
+        r = self.session.delete(self.base_url + "/presets/" + preset_name)
+        r.raise_for_status()
+
+    ##### methods for objects #####
+
+    def object_get_all(self, filename=None):
+        """Get all existing objects as a json object, optionally write them to a file"""
+        r = self.session.get(self.base_url + "/objects")
         r.raise_for_status()
         data = r.json()
         if filename is not None:
@@ -165,13 +175,6 @@ class Connection(object):
             json.dump(data, f)
             f.close()
         return data
-
-    def preset_delete(self, preset_name):
-        """Delete a given preset"""
-        r = self.session.delete(self.base_url + "/presets/" + preset_name)
-        r.raise_for_status()
-
-    ##### methods for objects #####
 
     def object_create(self, object_name, data):
         """Create a new object or update an object with a given name"""
@@ -187,17 +190,6 @@ class Connection(object):
             del gobject["_id"]
             self.__request_put("/objects/" + object_name, json.dumps(gobject))
 
-    def object_get_all(self, filename=None):
-        """Get all existing objects as a json object, optionally write them to a file"""
-        r = self.session.get(self.base_url + "/objects")
-        r.raise_for_status()
-        data = r.json()
-        if filename is not None:
-            f = open(filename, 'w')
-            json.dump(data, f)
-            f.close()
-        return data
-
     def object_delete(self, object_name):
         """Delete a given object"""
         r = self.session.delete(self.base_url + "/objects/" + object_name)
@@ -210,13 +202,9 @@ class Connection(object):
         r = self.session.delete(self.base_url + "/files/" + filename)
         r.raise_for_status()
 
-    def file_get_all(self,  filename=None):
-        """Get all files as a json object, optionally write them to a file"""
+    def file_get_all(self):
+        """Get all files as a json object"""
         r = self.session.get(self.base_url + "/files")
         r.raise_for_status()
         data = r.json()
-        if filename is not None:
-            f = open(filename, 'w')
-            json.dump(data, f)
-            f.close()
         return data
