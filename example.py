@@ -28,6 +28,12 @@ acs.task_retry("9h4769svl789kjf984ll")
 
 # print all tasks of a given device
 print(acs.task_get_all("000149-Kananga-P15"))
+# search a device by its ID and print all corresponding data
+print(acs.device_get_by_id("000149-Kananga-P15"))
+# search a device by its MAC address and print all corresponding data
+print(acs.device_get_by_MAC("00:01:49:ff:0f:01"))
+# print 2 given parameters of a given device
+print(acs.device_get_parameters("000149-Kananga-P15", "InternetGatewayDevice.DeviceInfo.SoftwareVersion,InternetGatewayDevice.X_TDT-DE_Interface.2.ProtoStatic.Ipv4.Address"))
 # delete a task
 acs.task_delete("9h4769svl789kjf984ll")
 

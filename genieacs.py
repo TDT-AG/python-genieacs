@@ -57,6 +57,30 @@ class Connection(object):
 
     ##### methods for devices #####
 
+    def device_get_by_id(self, device_id):
+        """Get all data of a device identified by its ID"""
+        quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/devices/" + "?query=" + quoted_id)
+        r.raise_for_status()
+        data = r.json()
+        return data
+
+    def device_get_by_MAC(self, device_MAC):
+        """Get all data of a device identified by its MAC address"""
+        quoted_MAC = requests.utils.quote("{\"summary.mac\":\"" + device_MAC + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/devices/" + "?query=" + quoted_MAC)
+        r.raise_for_status()
+        data = r.json()
+        return data
+
+    def device_get_parameters(self, device_id, parameter_names):
+        """Get a defined list of parameters from a given device"""
+        quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=" + parameter_names)
+        r.raise_for_status()
+        data = r.json()
+        return data
+
     def device_delete(self, device_id):
         """Delete a given device from the database"""
         r = self.session.delete(self.base_url + "/devices/" + device_id)

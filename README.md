@@ -29,10 +29,10 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Query GenieACS database:
 
-* search for devices:
-  * by ID
-  * by MAC
-* list parameters for a given device
+* (search for devices:)
+  * (by ID)
+  * (by MAC)
+* (list parameters for a given device)
 
 #### Manage devices:
 
