@@ -221,6 +221,11 @@ class Connection(object):
 
     ##### methods for files #####
 
+    def file_upload(self, filename, fileType, oui, productClass, version):
+        """Upload or update a file"""
+        r = self.session.request("PUT", self.base_url + "/files/" + filename, data = open( filename,"rb"), headers = {"fileType": fileType, "oui": oui, "productClass": productClass, "version" : version})
+        r.raise_for_status()
+
     def file_delete(self, filename):
         """Delete a given file"""
         r = self.session.delete(self.base_url + "/files/" + filename)

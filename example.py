@@ -37,7 +37,6 @@ print(acs.device_get_parameters("000149-Kananga-P15", "InternetGatewayDevice.Dev
 # delete a task
 acs.task_delete("9h4769svl789kjf984ll")
 
-
 # create a new preset
 acs.preset_create("Tagging", r'{ "weight": 0, "precondition": "{\"_tags\":{\"$ne\":\"tagged\"}}", "configurations": [ { "type": "add_tag", "tag":"tagged" }] }')
 # write all existing presets to a file and store them in a json object
@@ -65,6 +64,8 @@ acs.tag_remove("000149-Kananga-P15", "tagged")
 
 # print all existing files in the database
 print(acs.file_get_all())
+# upload a new or modified file
+acs.file_upload("Firmware.img", "1 Firmware Upgrade Image", "123456", "r4500", "2.0")
 # delete a file from the database
 acs.file_delete("Firmware.img")
 
