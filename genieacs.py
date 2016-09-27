@@ -41,6 +41,13 @@ class Connection(object):
                 self.session.auth = (self.username, self.password)
             if self.use_ssl:
                 self.session.verify = self.ssl_verify
+        try:
+            # do a request to test the connection
+            self.file_get_all()
+        except requests.exceptions.ConnectionError as err:
+            print("Connection:\nConnectionError: " + str(err) + "\nCould not connect to server.\n")
+        except requests.exceptions.HTTPError as err:
+            print("Connection:\nHTTPError: " + str(err) + "\n")
 
     def __request_post(self, url, data, conn_request=True):
         if conn_request:
@@ -100,60 +107,93 @@ class Connection(object):
         """Create a refreshObject task for a given device"""
         data = { "name": "refreshObject",
                  "objectName": object_name }
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_refresh_object:\nHTTPError: device_id might be incorrect\n")
 
     def task_set_parameter_values(self, device_id, parameter_values, conn_request=True):
         """Create a setParameterValues task for a given device"""
         data = { "name": "setParameterValues",
                  "parameterValues": parameter_values }
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_set_parameter_values:\nHTTPError: device_id might be incorrect\n")
 
     def task_get_parameter_values(self, device_id, parameter_names, conn_request = True):
         """Create a getParameterValues task for a given device"""
         data = { "name": "getParameterValues",
                 "parameterNames": parameter_names}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_get_parameter_values:\nHTTPError: device_id might be incorrect\n")
 
     def task_add_object(self, device_id, object_name, object_path, conn_request=True):
         """Create an addObject task for a given device"""
         data = { "name": "addObject", object_name : object_path}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_add_object:\nHTTPError: device_id might be incorrect\n")
 
     def task_reboot(self, device_id, conn_request=True):
         """Create a reboot task for a given device"""
         data = { "name": "reboot"}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_reboot:\nHTTPError: device_id might be incorrect\n")
 
     def task_factory_reset(self, device_id, conn_request=True):
         """Create a factoryReset task for a given device"""
         data = { "name": "factoryReset"}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_factory_reset:\nHTTPError: device_id might be incorrect\n")
 
     def task_download(self, device_id, file_id, filename, conn_request=True):
         """Create a download task for a given device"""
         data = { "name": "download", "file": file_id, "filename": filename}
-        self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        try:
+            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+        except requests.exceptions.HTTPError:
+            print("task_download:\nHTTPError: device_id might be incorrect\n")
 
     def task_retry(self, task_id):
         "Retry a faulty task at the next inform"
-        r = self.session.post(self.base_url + "/tasks/" + task_id + "/retry")
-        r.raise_for_status()
+        try:
+            r = self.session.post(self.base_url + "/tasks/" + task_id + "/retry")
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print("task_retry:\nHTTPError: task_id might be incorrect\n")
 
     def task_delete(self, task_id):
         """Delete a Task for a given device"""
-        r = self.session.delete(self.base_url + "/tasks/" + task_id)
-        r.raise_for_status()
+        try:
+            r = self.session.delete(self.base_url + "/tasks/" + task_id)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print("task_delete:\nHTTPError: task_id might be incorrect\n")
 
     ##### methods for tags ######
 
     def tag_assign(self, device_id, tag_name):
         """Assign a tag to a device"""
-        self.__request_post("/devices/" + device_id + "/tags/" + tag_name, None, False)
+        try:
+            self.__request_post("/devices/" + device_id + "/tags/" + tag_name, None, False)
+        except requests.exceptions.HTTPError:
+            print("tag_assign:\nHTTPError: device_id might be incorrect\n")
 
     def tag_remove(self, device_id, tag_name):
         """Remove a tag from a device"""
-        r = self.session.delete(self.base_url + "/devices/" + device_id + "/tags/" + tag_name)
-        r.raise_for_status()
+        try:
+            r = self.session.delete(self.base_url + "/devices/" + device_id + "/tags/" + tag_name)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print("tag_remove:\nHTTPError: device_id might be incorrect\n")
 
     ##### methods for presets #####
 
@@ -162,25 +202,39 @@ class Connection(object):
         r = self.session.get(self.base_url + "/presets")
         r.raise_for_status()
         data = r.json()
-        if filename is not None:
-            f = open(filename, 'w')
-            json.dump(data, f)
-            f.close()
-        return data
+        try:
+            if filename is not None:
+                f = open(filename, 'w')
+                json.dump(data, f)
+                f.close()
+        except IOError as err:
+            print("preset_get_all:\nIOError: " + str(err) + "\n")
+        finally:
+            return data
 
     def preset_create(self, preset_name, data):
         """Create a new preset or update a preset with a given name"""
-        self.__request_put("/presets/" + preset_name, data)
+        try:
+            self.__request_put("/presets/" + preset_name, data)
+        except requests.exceptions.HTTPError:
+            print("preset_create:\nHTTPError: given parameters might be incorrect\n")
 
     def preset_create_all_from_file(self, filename):
         """Create all presets contained in a json file"""
-        f = open(filename, 'r')
-        data = json.load(f)
-        f.close()
-        for preset in data:
-            preset_name = preset["_id"]
-            del preset["_id"]
-            self.__request_put("/presets/" + preset_name, json.dumps(preset))
+        try:
+            f = open(filename, 'r')
+            data = json.load(f)
+            f.close()
+            for preset in data:
+                preset_name = preset["_id"]
+                del preset["_id"]
+                self.__request_put("/presets/" + preset_name, json.dumps(preset))
+        except IOError as err:
+            print("preset_create_all_from_file:\nIOError: " + str(err) + "\n")
+        except ValueError:
+            print("preset_create_all_from_file:\nValueError: File contains faulty values\n")
+        except KeyError:
+            print("preset_create_all_from_file:\nKeyError: File contains faulty keys\n")
 
     def preset_delete(self, preset_name):
         """Delete a given preset"""
@@ -194,25 +248,39 @@ class Connection(object):
         r = self.session.get(self.base_url + "/objects")
         r.raise_for_status()
         data = r.json()
-        if filename is not None:
-            f = open(filename, 'w')
-            json.dump(data, f)
-            f.close()
-        return data
+        try:
+            if filename is not None:
+                f = open(filename, 'w')
+                json.dump(data, f)
+                f.close()
+        except IOError as err:
+            print("object_get_all:\nIOError: " + str(err) + "\n")
+        finally:
+            return data
 
     def object_create(self, object_name, data):
         """Create a new object or update an object with a given name"""
-        self.__request_put("/objects/" + object_name, data)
+        try:
+            self.__request_put("/objects/" + object_name, data)
+        except requests.exceptions.HTTPError:
+            print("object_create:\nA HTTPError accured, given parameters might be incorrect\n")
 
     def object_create_all_from_file(self, filename):
         """Create all objects contained in a json file"""
-        f = open(filename, 'r')
-        data = json.load(f)
-        f.close()
-        for gobject in data:
-            object_name = gobject["_id"]
-            del gobject["_id"]
-            self.__request_put("/objects/" + object_name, json.dumps(gobject))
+        try:
+            f = open(filename, 'r')
+            data = json.load(f)
+            f.close()
+            for gobject in data:
+                object_name = gobject["_id"]
+                del gobject["_id"]
+                self.__request_put("/objects/" + object_name, json.dumps(gobject))
+        except IOError as err:
+            print("object_create_all_from_file:\nIOError: " + str(err) + "\n")
+        except ValueError:
+            print("object_create_all_from_file:\nValueError: File contains faulty values\n")
+        except KeyError:
+            print("object_create_all_from_file:\nKeyError: File contains faulty keys\n")
 
     def object_delete(self, object_name):
         """Delete a given object"""
@@ -223,8 +291,11 @@ class Connection(object):
 
     def file_upload(self, filename, fileType, oui, productClass, version):
         """Upload or update a file"""
-        r = self.session.request("PUT", self.base_url + "/files/" + filename, data = open( filename,"rb"), headers = {"fileType": fileType, "oui": oui, "productClass": productClass, "version" : version})
-        r.raise_for_status()
+        try:
+            r = self.session.request("PUT", self.base_url + "/files/" + filename, data = open( filename,"rb"), headers = {"fileType": fileType, "oui": oui, "productClass": productClass, "version" : version})
+            r.raise_for_status()
+        except IOError as err:
+            print("file_upload:\nIOError: " + str(err) + "\n")
 
     def file_delete(self, filename):
         """Delete a given file"""
