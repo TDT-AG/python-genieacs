@@ -29,6 +29,7 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Query GenieACS database:
 
+* (list IDs of all devices)
 * (search for devices:)
   * (by ID)
   * (by MAC)

@@ -64,6 +64,16 @@ class Connection(object):
 
     ##### methods for devices #####
 
+    def device_get_all_IDs(self):
+        """Get IDs of all devices"""
+        r = self.session.get(self.base_url + "/devices/" + "?projection=_id")
+        r.raise_for_status()
+        jsondata = r.json()
+        data = []
+        for device in jsondata:
+            data.append(device["_id"])
+        return data
+
     def device_get_by_id(self, device_id):
         """Get all data of a device identified by its ID"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
