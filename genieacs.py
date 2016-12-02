@@ -215,7 +215,7 @@ class Connection(object):
         try:
             if filename is not None:
                 f = open(filename, 'w')
-                json.dump(data, f, indent=4, separators=(',', ': '), sort_keys=True)
+                json.dump(data, f, indent=4, separators=(',', ': '))
                 f.close()
         except IOError as err:
             print("preset_get_all:\nIOError: " + str(err) + "\n")
@@ -261,7 +261,7 @@ class Connection(object):
         try:
             if filename is not None:
                 f = open(filename, 'w')
-                json.dump(data, f, indent=4, separators=(',', ': '), sort_keys=True)
+                json.dump(data, f, indent=4, separators=(',', ': '))
                 f.close()
         except IOError as err:
             print("object_get_all:\nIOError: " + str(err) + "\n")
