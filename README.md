@@ -56,6 +56,7 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Manage tags:
 
+* (list tags filtered by device)
 * (assign a tag to a device)
 * (remove a tag from a device)
 

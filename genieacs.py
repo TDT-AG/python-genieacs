@@ -190,6 +190,14 @@ class Connection(object):
 
     ##### methods for tags ######
 
+    def tag_get_all(self, device_id):
+        """Get all existing tags of a given device"""
+        quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=_tags")
+        r.raise_for_status()
+        data = r.json()
+        return data[0]["_tags"]
+
     def tag_assign(self, device_id, tag_name):
         """Assign a tag to a device"""
         try:
