@@ -100,7 +100,7 @@ class Connection(object):
 
     def device_delete(self, device_id):
         """Delete a given device from the database"""
-        r = self.session.delete(self.base_url + "/devices/" + device_id)
+        r = self.session.delete(self.base_url + "/devices/" + requests.utils.quote(device_id))
         r.raise_for_status()
 
     ##### methods for tasks #####
@@ -118,7 +118,7 @@ class Connection(object):
         data = { "name": "refreshObject",
                  "objectName": object_name }
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_refresh_object:\nHTTPError: device_id might be incorrect\n")
 
@@ -127,7 +127,7 @@ class Connection(object):
         data = { "name": "setParameterValues",
                  "parameterValues": parameter_values }
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_set_parameter_values:\nHTTPError: device_id might be incorrect\n")
 
@@ -136,7 +136,7 @@ class Connection(object):
         data = { "name": "getParameterValues",
                 "parameterNames": parameter_names}
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_get_parameter_values:\nHTTPError: device_id might be incorrect\n")
 
@@ -144,7 +144,7 @@ class Connection(object):
         """Create an addObject task for a given device"""
         data = { "name": "addObject", object_name : object_path}
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_add_object:\nHTTPError: device_id might be incorrect\n")
 
@@ -152,7 +152,7 @@ class Connection(object):
         """Create a reboot task for a given device"""
         data = { "name": "reboot"}
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_reboot:\nHTTPError: device_id might be incorrect\n")
 
@@ -160,7 +160,7 @@ class Connection(object):
         """Create a factoryReset task for a given device"""
         data = { "name": "factoryReset"}
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_factory_reset:\nHTTPError: device_id might be incorrect\n")
 
@@ -168,7 +168,7 @@ class Connection(object):
         """Create a download task for a given device"""
         data = { "name": "download", "file": file_id, "filename": filename}
         try:
-            self.__request_post("/devices/" + device_id + "/tasks", data, conn_request)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             print("task_download:\nHTTPError: device_id might be incorrect\n")
 
@@ -193,14 +193,14 @@ class Connection(object):
     def tag_assign(self, device_id, tag_name):
         """Assign a tag to a device"""
         try:
-            self.__request_post("/devices/" + device_id + "/tags/" + tag_name, None, False)
+            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tags/" + tag_name, None, False)
         except requests.exceptions.HTTPError:
             print("tag_assign:\nHTTPError: device_id might be incorrect\n")
 
     def tag_remove(self, device_id, tag_name):
         """Remove a tag from a device"""
         try:
-            r = self.session.delete(self.base_url + "/devices/" + device_id + "/tags/" + tag_name)
+            r = self.session.delete(self.base_url + "/devices/" + requests.utils.quote(device_id) + "/tags/" + tag_name)
             r.raise_for_status()
         except requests.exceptions.HTTPError:
             print("tag_remove:\nHTTPError: device_id might be incorrect\n")
