@@ -37,6 +37,8 @@ print(acs.device_get_all_IDs())
 print(acs.device_get_by_id(device_id))
 # search a device by its MAC address and print all corresponding data
 print(acs.device_get_by_MAC("00:01:49:ff:0f:01"))
+# print the value of a given parameter of a given device
+print(acs.device_get_parameter(device_id, "InternetGatewayDevice.DeviceInfo.SoftwareVersion"))
 # print 2 given parameters of a given device
 print(acs.device_get_parameters(device_id, "InternetGatewayDevice.DeviceInfo.SoftwareVersion,InternetGatewayDevice.X_TDT-DE_Interface.2.ProtoStatic.Ipv4.Address"))
 # delete a task
@@ -62,6 +64,8 @@ for gobject in object_data:
 # create all objects from the file
 acs.object_create_all_from_file('objects.json')
 
+# print all tags of a given device
+print(acs.tag_get_all(device_id))
 # assign a tag to a device
 acs.tag_assign(device_id, "tagged")
 # remove a tag from a device

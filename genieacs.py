@@ -90,6 +90,20 @@ class Connection(object):
         data = r.json()
         return data
 
+    def device_get_parameter(self, device_id, parameter_name):
+        """Directly get the value of a given parameter from a given device"""
+        quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
+        r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=" + parameter_name)
+        r.raise_for_status()
+        data = r.json()
+        try:
+            value = data[0]
+            for part in parameter_name.split('.'):
+                value = value[part]
+            return value["_value"]
+        except (IndexError, KeyError):
+            return None
+
     def device_get_parameters(self, device_id, parameter_names):
         """Get a defined list of parameters from a given device"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
