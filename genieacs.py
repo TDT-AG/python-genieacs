@@ -196,7 +196,10 @@ class Connection(object):
         r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=_tags")
         r.raise_for_status()
         data = r.json()
-        return data[0]["_tags"]
+        try:
+            return data[0]["_tags"]
+        except (IndexError, KeyError):
+            return []
 
     def tag_assign(self, device_id, tag_name):
         """Assign a tag to a device"""
