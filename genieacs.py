@@ -110,7 +110,33 @@ class Connection(object):
         r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=" + parameter_names)
         r.raise_for_status()
         data = r.json()
-        return data
+        try:
+            data = data[0]
+            values = {}
+            src = data
+            dest = values
+        except (IndexError):
+            return {}
+        for parameter in parameter_names.split(','):
+            parameter_parts = parameter.split('.')
+            for part in parameter_parts:
+                if part != parameter_parts[-1]:
+                    try:
+                        src = src[part]
+                    except (KeyError):
+                        src[part] = {}
+                        src = src[part]
+                    if part not in dest.keys():
+                        dest[part] = {}
+                    dest = dest[part]
+                else:
+                    try:
+                        dest[part] = src[part]["_value"]
+                    except (KeyError):
+                        dest[part] = None
+                    dest = values
+                    src = data
+        return values
 
     def device_delete(self, device_id):
         """Delete a given device from the database"""
