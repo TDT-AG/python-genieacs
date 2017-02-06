@@ -22,7 +22,6 @@ GNU General Public License v2:
 
 * high level abstracting methods for comfortable usage of the API
 * user-definable error/exception handling (stop on error or warn and continue)
-* ensure python 2 and 3 compatibility
 * setup.py
 
 The following list contains all possible interactions with the GenieACS REST API. Interactions already implemented are enclosed in brackets.

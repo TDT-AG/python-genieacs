@@ -49,6 +49,13 @@ class Connection(object):
         except requests.exceptions.HTTPError as err:
             print("Connection:\nHTTPError: " + str(err) + "\n")
 
+    def __request_get(self, url):
+        request_url = self.base_url + url
+        r = self.session.get(request_url)
+        r.raise_for_status()
+        data = r.json()
+        return data
+
     def __request_post(self, url, data, conn_request=True):
         if conn_request:
             request_url = self.base_url + url + "?connection_request"
@@ -66,9 +73,7 @@ class Connection(object):
 
     def device_get_all_IDs(self):
         """Get IDs of all devices"""
-        r = self.session.get(self.base_url + "/devices/" + "?projection=_id")
-        r.raise_for_status()
-        jsondata = r.json()
+        jsondata = self.__request_get("/devices/" + "?projection=_id")
         data = []
         for device in jsondata:
             data.append(device["_id"])
@@ -77,25 +82,17 @@ class Connection(object):
     def device_get_by_id(self, device_id):
         """Get all data of a device identified by its ID"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/devices/" + "?query=" + quoted_id)
-        r.raise_for_status()
-        data = r.json()
-        return data
+        return self.__request_get("/devices/" + "?query=" + quoted_id)
 
     def device_get_by_MAC(self, device_MAC):
         """Get all data of a device identified by its MAC address"""
         quoted_MAC = requests.utils.quote("{\"summary.mac\":\"" + device_MAC + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/devices/" + "?query=" + quoted_MAC)
-        r.raise_for_status()
-        data = r.json()
-        return data
+        return self.__request_get("/devices/" + "?query=" + quoted_MAC)
 
     def device_get_parameter(self, device_id, parameter_name):
         """Directly get the value of a given parameter from a given device"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=" + parameter_name)
-        r.raise_for_status()
-        data = r.json()
+        data = self.__request_get("/devices" + "?query=" + quoted_id + "&projection=" + parameter_name)
         try:
             value = data[0]
             for part in parameter_name.split('.'):
@@ -107,9 +104,7 @@ class Connection(object):
     def device_get_parameters(self, device_id, parameter_names):
         """Get a defined list of parameters from a given device"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=" + parameter_names)
-        r.raise_for_status()
-        data = r.json()
+        data = self.__request_get("/devices" + "?query=" + quoted_id + "&projection=" + parameter_names)
         try:
             data = data[0]
             values = {}
@@ -148,10 +143,7 @@ class Connection(object):
     def task_get_all(self, device_id):
         """Get all existing tasks of a given device"""
         quoted_id = requests.utils.quote("{\"device\":\"" + device_id + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/tasks/" + "?query=" + quoted_id)
-        r.raise_for_status()
-        data = r.json()
-        return data
+        return self.__request_get("/tasks/" + "?query=" + quoted_id)
 
     def task_refresh_object(self, device_id, object_name, conn_request=True):
         """Create a refreshObject task for a given device"""
@@ -233,9 +225,7 @@ class Connection(object):
     def tag_get_all(self, device_id):
         """Get all existing tags of a given device"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
-        r = self.session.get(self.base_url + "/devices" + "?query=" + quoted_id + "&projection=_tags")
-        r.raise_for_status()
-        data = r.json()
+        data = self.__request_get("/devices" + "?query=" + quoted_id + "&projection=_tags")
         try:
             return data[0]["_tags"]
         except (IndexError, KeyError):
@@ -260,9 +250,7 @@ class Connection(object):
 
     def preset_get_all(self, filename=None):
         """Get all existing presets as a json object, optionally write them to a file"""
-        r = self.session.get(self.base_url + "/presets")
-        r.raise_for_status()
-        data = r.json()
+        data = self.__request_get("/presets")
         try:
             if filename is not None:
                 f = open(filename, 'w')
@@ -306,9 +294,7 @@ class Connection(object):
 
     def object_get_all(self, filename=None):
         """Get all existing objects as a json object, optionally write them to a file"""
-        r = self.session.get(self.base_url + "/objects")
-        r.raise_for_status()
-        data = r.json()
+        data = self.__request_get("/objects")
         try:
             if filename is not None:
                 f = open(filename, 'w')
@@ -365,7 +351,4 @@ class Connection(object):
 
     def file_get_all(self):
         """Get all files as a json object"""
-        r = self.session.get(self.base_url + "/files")
-        r.raise_for_status()
-        data = r.json()
-        return data
+        return self.__request_get("/files")
