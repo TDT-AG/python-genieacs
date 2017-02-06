@@ -70,6 +70,11 @@ class Connection(object):
         r = self.session.put(request_url, data, timeout=self.timeout)
         r.raise_for_status()
 
+    def __request_delete(self, url):
+        request_url = self.base_url + url
+        r = self.session.delete(request_url, timeout=self.timeout)
+        r.raise_for_status()
+
     ##### methods for devices #####
 
     def device_get_all_IDs(self):
@@ -136,8 +141,7 @@ class Connection(object):
 
     def device_delete(self, device_id):
         """Delete a given device from the database"""
-        r = self.session.delete(self.base_url + "/devices/" + requests.utils.quote(device_id))
-        r.raise_for_status()
+        self.__request_delete("/devices/" + requests.utils.quote(device_id))
 
     ##### methods for tasks #####
 
@@ -215,8 +219,7 @@ class Connection(object):
     def task_delete(self, task_id):
         """Delete a Task for a given device"""
         try:
-            r = self.session.delete(self.base_url + "/tasks/" + task_id)
-            r.raise_for_status()
+            self.__request_delete("/tasks/" + task_id)
         except requests.exceptions.HTTPError:
             print("task_delete:\nHTTPError: task_id might be incorrect\n")
 
@@ -241,8 +244,7 @@ class Connection(object):
     def tag_remove(self, device_id, tag_name):
         """Remove a tag from a device"""
         try:
-            r = self.session.delete(self.base_url + "/devices/" + requests.utils.quote(device_id) + "/tags/" + tag_name)
-            r.raise_for_status()
+            self.__request_delete("/devices/" + requests.utils.quote(device_id) + "/tags/" + tag_name)
         except requests.exceptions.HTTPError:
             print("tag_remove:\nHTTPError: device_id might be incorrect\n")
 
@@ -287,8 +289,7 @@ class Connection(object):
 
     def preset_delete(self, preset_name):
         """Delete a given preset"""
-        r = self.session.delete(self.base_url + "/presets/" + preset_name)
-        r.raise_for_status()
+        self.__request_delete("/presets/" + preset_name)
 
     ##### methods for objects #####
 
@@ -331,8 +332,7 @@ class Connection(object):
 
     def object_delete(self, object_name):
         """Delete a given object"""
-        r = self.session.delete(self.base_url + "/objects/" + object_name)
-        r.raise_for_status()
+        self.__request_delete("/objects/" + object_name)
 
     ##### methods for files #####
 
@@ -346,8 +346,7 @@ class Connection(object):
 
     def file_delete(self, filename):
         """Delete a given file"""
-        r = self.session.delete(self.base_url + "/files/" + filename)
-        r.raise_for_status()
+        self.__request_delete("/files/" + filename)
 
     def file_get_all(self):
         """Get all files as a json object"""
