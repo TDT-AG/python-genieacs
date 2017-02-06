@@ -65,9 +65,12 @@ class Connection(object):
         r = self.session.post(request_url, json=data, timeout=self.timeout)
         r.raise_for_status()
 
-    def __request_put(self, url, data):
+    def __request_put(self, url, data, headers=None):
         request_url = self.base_url + url
-        r = self.session.put(request_url, data, timeout=self.timeout)
+        if headers is not None:
+            r = self.session.put(request_url, data, timeout=self.timeout, headers=headers)
+        else:
+            r = self.session.put(request_url, data, timeout=self.timeout)
         r.raise_for_status()
 
     def __request_delete(self, url):
@@ -339,8 +342,7 @@ class Connection(object):
     def file_upload(self, filename, fileType, oui, productClass, version):
         """Upload or update a file"""
         try:
-            r = self.session.request("PUT", self.base_url + "/files/" + filename, data = open( filename,"rb"), headers = {"fileType": fileType, "oui": oui, "productClass": productClass, "version" : version})
-            r.raise_for_status()
+            self.__request_put("/files/" + filename, data=open(filename, "rb"), headers={"fileType": fileType, "oui": oui, "productClass": productClass, "version" : version})
         except IOError as err:
             print("file_upload:\nIOError: " + str(err) + "\n")
 
