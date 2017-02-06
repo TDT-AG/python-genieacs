@@ -9,7 +9,7 @@ import json
 
 class Connection(object):
     """Connection object to interact with the GenieACS server."""
-    def __init__(self, ip, port=7557, ssl=False, verify=False, auth=False, user="", passwd="", url=""):
+    def __init__(self, ip, port=7557, ssl=False, verify=False, auth=False, user="", passwd="", url="", timeout=10):
         self.server_ip = ip
         self.server_port = port
         self.use_ssl = ssl
@@ -18,6 +18,7 @@ class Connection(object):
         self.username = user
         self.password = passwd
         self.server_url = url
+        self.timeout = timeout
         self.base_url = ""
         self.session = None
         self.__set_base_url()
@@ -51,7 +52,7 @@ class Connection(object):
 
     def __request_get(self, url):
         request_url = self.base_url + url
-        r = self.session.get(request_url)
+        r = self.session.get(request_url, timeout=self.timeout)
         r.raise_for_status()
         data = r.json()
         return data
@@ -61,12 +62,12 @@ class Connection(object):
             request_url = self.base_url + url + "?connection_request"
         else:
             request_url = self.base_url + url
-        r = self.session.post(request_url, json=data)
+        r = self.session.post(request_url, json=data, timeout=self.timeout)
         r.raise_for_status()
 
     def __request_put(self, url, data):
         request_url = self.base_url + url
-        r = self.session.put(request_url, data)
+        r = self.session.put(request_url, data, timeout=self.timeout)
         r.raise_for_status()
 
     ##### methods for devices #####
@@ -207,8 +208,7 @@ class Connection(object):
     def task_retry(self, task_id):
         "Retry a faulty task at the next inform"
         try:
-            r = self.session.post(self.base_url + "/tasks/" + task_id + "/retry")
-            r.raise_for_status()
+            self.__request_post("/tasks/" + task_id + "/retry", None)
         except requests.exceptions.HTTPError:
             print("task_retry:\nHTTPError: task_id might be incorrect\n")
 
