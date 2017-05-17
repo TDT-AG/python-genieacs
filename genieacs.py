@@ -268,8 +268,9 @@ class Connection(object):
 
     def preset_create(self, preset_name, data):
         """Create a new preset or update a preset with a given name"""
+        quoted_name = requests.utils.quote(preset_name)
         try:
-            self.__request_put("/presets/" + preset_name, data)
+            self.__request_put("/presets/" + quoted_name, data)
         except requests.exceptions.HTTPError:
             print("preset_create:\nHTTPError: given parameters might be incorrect\n")
 
@@ -292,7 +293,8 @@ class Connection(object):
 
     def preset_delete(self, preset_name):
         """Delete a given preset"""
-        self.__request_delete("/presets/" + preset_name)
+        quoted_name = requests.utils.quote(preset_name)
+        self.__request_delete("/presets/" + quoted_name)
 
     ##### methods for objects #####
 
