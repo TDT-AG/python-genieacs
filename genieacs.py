@@ -270,7 +270,7 @@ class Connection(object):
         try:
             self.__request_put("/presets/" + quoted_name, data)
         except requests.exceptions.HTTPError:
-            print("preset_create:\nHTTPError: given parameters might be incorrect\n")
+            raise InvalidRequestDataError
 
     def preset_create_all_from_file(self, filename):
         """Create all presets contained in a json file"""
@@ -317,7 +317,7 @@ class Connection(object):
         try:
             self.__request_put("/objects/" + object_name, data)
         except requests.exceptions.HTTPError:
-            print("object_create:\nA HTTPError accured, given parameters might be incorrect\n")
+            raise InvalidRequestDataError
 
     def object_create_all_from_file(self, filename):
         """Create all objects contained in a json file"""
@@ -367,3 +367,7 @@ class ConnectionError(Exception):
 class ItemNotFoundError(Exception):
     def __str__(self):
         return "Could not find the requested item (device, task, preset, object, file, etc)"
+
+class InvalidRequestDataError(Exception):
+    def __str__(self):
+        return "Request contained invalid data"
