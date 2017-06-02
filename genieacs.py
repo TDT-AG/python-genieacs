@@ -45,10 +45,8 @@ class Connection(object):
         try:
             # do a request to test the connection
             self.file_get_all()
-        except requests.exceptions.ConnectionError as err:
-            print("Connection:\nConnectionError: " + str(err) + "\nCould not connect to server.\n")
-        except requests.exceptions.HTTPError as err:
-            print("Connection:\nHTTPError: " + str(err) + "\n")
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
+            raise ConnectionError
 
     def __request_get(self, url):
         request_url = self.base_url + url
@@ -160,7 +158,7 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_refresh_object:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_set_parameter_values(self, device_id, parameter_values, conn_request=True):
         """Create a setParameterValues task for a given device"""
@@ -169,7 +167,7 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_set_parameter_values:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_get_parameter_values(self, device_id, parameter_names, conn_request = True):
         """Create a getParameterValues task for a given device"""
@@ -178,7 +176,7 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_get_parameter_values:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_add_object(self, device_id, object_name, object_path, conn_request=True):
         """Create an addObject task for a given device"""
@@ -186,7 +184,7 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_add_object:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_reboot(self, device_id, conn_request=True):
         """Create a reboot task for a given device"""
@@ -194,7 +192,7 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_reboot:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_factory_reset(self, device_id, conn_request=True):
         """Create a factoryReset task for a given device"""
@@ -202,7 +200,7 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_factory_reset:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_download(self, device_id, file_id, filename, conn_request=True):
         """Create a download task for a given device"""
@@ -210,21 +208,21 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
-            print("task_download:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_retry(self, task_id):
         "Retry a faulty task at the next inform"
         try:
             self.__request_post("/tasks/" + task_id + "/retry", None)
         except requests.exceptions.HTTPError:
-            print("task_retry:\nHTTPError: task_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def task_delete(self, task_id):
         """Delete a Task for a given device"""
         try:
             self.__request_delete("/tasks/" + task_id)
         except requests.exceptions.HTTPError:
-            print("task_delete:\nHTTPError: task_id might be incorrect\n")
+            raise ItemNotFoundError
 
     ##### methods for tags ######
 
@@ -242,14 +240,14 @@ class Connection(object):
         try:
             self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tags/" + tag_name, None, False)
         except requests.exceptions.HTTPError:
-            print("tag_assign:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     def tag_remove(self, device_id, tag_name):
         """Remove a tag from a device"""
         try:
             self.__request_delete("/devices/" + requests.utils.quote(device_id) + "/tags/" + tag_name)
         except requests.exceptions.HTTPError:
-            print("tag_remove:\nHTTPError: device_id might be incorrect\n")
+            raise ItemNotFoundError
 
     ##### methods for presets #####
 
@@ -294,7 +292,10 @@ class Connection(object):
     def preset_delete(self, preset_name):
         """Delete a given preset"""
         quoted_name = requests.utils.quote(preset_name)
-        self.__request_delete("/presets/" + quoted_name)
+        try:
+            self.__request_delete("/presets/" + quoted_name)
+        except requests.exceptions.HTTPError:
+            raise ItemNotFoundError
 
     ##### methods for objects #####
 
@@ -337,7 +338,10 @@ class Connection(object):
 
     def object_delete(self, object_name):
         """Delete a given object"""
-        self.__request_delete("/objects/" + object_name)
+        try:
+            self.__request_delete("/objects/" + object_name)
+        except requests.exceptions.HTTPError:
+            raise ItemNotFoundError
 
     ##### methods for files #####
 
@@ -355,3 +359,11 @@ class Connection(object):
     def file_get_all(self):
         """Get all files as a json object"""
         return self.__request_get("/files")
+
+class ConnectionError(Exception):
+    def __str__(self):
+        return "Could not (re-)connect to the ACS"
+
+class ItemNotFoundError(Exception):
+    def __str__(self):
+        return "Could not find the requested item (device, task, preset, object, file, etc)"
