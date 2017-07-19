@@ -279,7 +279,7 @@ class Connection(object):
             data = json.load(f)
             f.close()
             for preset in data:
-                preset_name = preset["_id"]
+                preset_name = requests.utils.quote(preset["_id"])
                 del preset["_id"]
                 self.__request_put("/presets/" + preset_name, json.dumps(preset))
         except IOError as err:
@@ -314,8 +314,9 @@ class Connection(object):
 
     def object_create(self, object_name, data):
         """Create a new object or update an object with a given name"""
+        quoted_name = requests.utils.quote(object_name)
         try:
-            self.__request_put("/objects/" + object_name, data)
+            self.__request_put("/objects/" + quoted_name, data)
         except requests.exceptions.HTTPError:
             raise InvalidRequestDataError
 
@@ -326,7 +327,7 @@ class Connection(object):
             data = json.load(f)
             f.close()
             for gobject in data:
-                object_name = gobject["_id"]
+                object_name = requests.utils.quote(gobject["_id"])
                 del gobject["_id"]
                 self.__request_put("/objects/" + object_name, json.dumps(gobject))
         except IOError as err:
@@ -338,8 +339,57 @@ class Connection(object):
 
     def object_delete(self, object_name):
         """Delete a given object"""
+        quoted_name = requests.utils.quote(object_name)
         try:
-            self.__request_delete("/objects/" + object_name)
+            self.__request_delete("/objects/" + quoted_name)
+        except requests.exceptions.HTTPError:
+            raise ItemNotFoundError
+
+    ##### methods for provisions #####
+
+    def provision_get_all(self, filename=None):
+        """Get all existing provisions as a json object, optionally write them to a file"""
+        data = self.__request_get("/provisions")
+        try:
+            if filename is not None:
+                f = open(filename, 'w')
+                json.dump(data, f, indent=4, separators=(',', ': '))
+                f.close()
+        except IOError as err:
+            print("provision_get_all:\nIOError: " + str(err) + "\n")
+        finally:
+            return data
+
+    def provision_create(self, provision_name, data):
+        """Create a new provision or update a provision with a given name"""
+        quoted_name = requests.utils.quote(provision_name)
+        try:
+            self.__request_put("/provisions/" + quoted_name, data)
+        except requests.exceptions.HTTPError:
+            raise InvalidRequestDataError
+
+    def provision_create_all_from_file(self, filename):
+        """Create all provisions contained in a json file"""
+        try:
+            f = open(filename, 'r')
+            data = json.load(f)
+            f.close()
+            for provision in data:
+                provision_name = requests.utils.quote(provision["_id"])
+                provision_data = provision["script"]
+                self.__request_put("/provisions/" + provision_name, provision_data)
+        except IOError as err:
+            print("provision_create_all_from_file:\nIOError: " + str(err) + "\n")
+        except ValueError:
+            print("provision_create_all_from_file:\nValueError: File contains faulty values\n")
+        except KeyError:
+            print("provision_create_all_from_file:\nKeyError: File contains faulty keys\n")
+
+    def provision_delete(self, provision_name):
+        """Delete a given provision"""
+        quoted_name = requests.utils.quote(provision_name)
+        try:
+            self.__request_delete("/provisions/" + quoted_name)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 

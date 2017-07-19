@@ -64,6 +64,16 @@ for gobject in object_data:
 # create all objects from the file
 acs.object_create_all_from_file('objects.json')
 
+# create a new provision
+acs.provision_create("Logging", '// This is a comment\nlog("Hello World!");')
+# write all existing provisions to a file and store them in a json object
+provision_data = acs.provision_get_all('provisions.json')
+# delete all provisisions
+for provision in provision_data:
+    acs.provision_delete(provision["_id"])
+# create all provisions from the file
+acs.provision_create_all_from_file('provisions.json')
+
 # print all tags of a given device
 print(acs.tag_get_all(device_id))
 # assign a tag to a device

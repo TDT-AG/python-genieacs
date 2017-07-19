@@ -75,6 +75,14 @@ The following list contains all possible interactions with the GenieACS REST API
 * (create all objects from a file)
 * (delete an object)
 
+#### Manage provisions:
+
+* (list all provisions)
+* (write all provisions to a file)
+* (create or update a provision)
+* (create all provisions from a file)
+* (delete a provision)
+
 #### Manage files:
 
 * list all files
