@@ -50,8 +50,11 @@ class Connection(object):
 
     def __request_get(self, url):
         request_url = self.base_url + url
-        r = self.session.get(request_url, timeout=self.timeout)
-        r.raise_for_status()
+        try:
+            r = self.session.get(request_url, timeout=self.timeout)
+            r.raise_for_status()
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
+            raise ConnectionError
         data = r.json()
         return data
 
@@ -60,21 +63,30 @@ class Connection(object):
             request_url = self.base_url + url + "?connection_request"
         else:
             request_url = self.base_url + url
-        r = self.session.post(request_url, json=data, timeout=self.timeout)
-        r.raise_for_status()
+        try:
+            r = self.session.post(request_url, json=data, timeout=self.timeout)
+            r.raise_for_status()
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
+            raise ConnectionError
 
     def __request_put(self, url, data, headers=None):
         request_url = self.base_url + url
-        if headers is not None:
-            r = self.session.put(request_url, data, timeout=self.timeout, headers=headers)
-        else:
-            r = self.session.put(request_url, data, timeout=self.timeout)
-        r.raise_for_status()
+        try:
+            if headers is not None:
+                r = self.session.put(request_url, data, timeout=self.timeout, headers=headers)
+            else:
+                r = self.session.put(request_url, data, timeout=self.timeout)
+            r.raise_for_status()
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
+            raise ConnectionError
 
     def __request_delete(self, url):
         request_url = self.base_url + url
-        r = self.session.delete(request_url, timeout=self.timeout)
-        r.raise_for_status()
+        try:
+            r = self.session.delete(request_url, timeout=self.timeout)
+            r.raise_for_status()
+        except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
+            raise ConnectionError
 
     ##### methods for devices #####
 
