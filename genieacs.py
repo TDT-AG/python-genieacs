@@ -88,6 +88,11 @@ class Connection(object):
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
 
+    def close(self):
+        """Explicitly close the session"""
+        if self.session is not None:
+            self.session.close()
+
     ##### methods for devices #####
 
     def device_get_all_IDs(self):
