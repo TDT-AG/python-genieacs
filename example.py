@@ -90,6 +90,3 @@ acs.file_delete("Firmware.img")
 
 # delete the device from the database
 acs.device_delete(device_id)
-
-# close the connection session with the acs
-acs.close()
