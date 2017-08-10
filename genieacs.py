@@ -24,10 +24,6 @@ class Connection(object):
         self.__set_base_url()
         self.__create_session()
 
-    def __del__(self):
-        if self.session is not None:
-            self.session.close()
-
     def __set_base_url(self):
         if not self.use_ssl:
             self.base_url = "http://"
