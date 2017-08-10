@@ -83,6 +83,8 @@ acs.tag_remove(device_id, "tagged")
 
 # print all existing files in the database
 print(acs.file_get_all())
+# print data of a specific file
+print(str(acs.file_get(fileType="12 Other File", version="0.4")))
 # upload a new or modified file
 acs.file_upload("Firmware.img", "1 Firmware Upgrade Image", "123456", "r4500", "2.0")
 # delete a file from the database

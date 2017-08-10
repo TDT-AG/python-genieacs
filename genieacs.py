@@ -418,6 +418,32 @@ class Connection(object):
         """Get all files as a json object"""
         return self.__request_get("/files")
 
+    def file_get(self, filename=None, fileType=None, oui=None, productClass=None, version=None):
+        """Get all data from one or several files"""
+        url = "{"
+        if filename is not None:
+            url += "\"filename\":\"" + filename + "\""
+        else:
+            if fileType is not None:
+                if url != "{":
+                    url += ","
+                url += "\"metadata.fileType\":\"" + fileType + "\""
+            if oui is not None:
+                if url != "{":
+                    url += ","
+                url += "\"metadata.oui\":\"" + oui + "\""
+            if productClass is not None:
+                if url != "{":
+                    url += ","
+                url += "\"metadata.productClass\":\"" + productClass + "\""
+            if version is not None:
+                if url != "{":
+                    url += ","
+                url += "\"metadata.version\":\"" + version + "\""
+        if url == "{":
+            raise InvalidRequestDataError
+        return self.__request_get("/files/?query=" + requests.utils.quote(url + "}", safe = ''))
+
 class ConnectionError(Exception):
     def __str__(self):
         return "Could not (re-)connect to the ACS"
