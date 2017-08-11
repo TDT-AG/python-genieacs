@@ -64,6 +64,8 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
+        data = r.json()
+        return data
 
     def __request_put(self, url, data, headers=None):
         request_url = self.base_url + url
@@ -75,6 +77,8 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
+        data = r.json()
+        return data
 
     def __request_delete(self, url):
         request_url = self.base_url + url
@@ -83,6 +87,8 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
+        data = r.json()
+        return data
 
     ##### methods for devices #####
 
@@ -164,7 +170,7 @@ class Connection(object):
         data = { "name": "refreshObject",
                  "objectName": object_name }
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
@@ -173,7 +179,7 @@ class Connection(object):
         data = { "name": "setParameterValues",
                  "parameterValues": parameter_values }
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
@@ -182,7 +188,7 @@ class Connection(object):
         data = { "name": "getParameterValues",
                 "parameterNames": parameter_names}
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
@@ -190,7 +196,7 @@ class Connection(object):
         """Create an addObject task for a given device"""
         data = { "name": "addObject", object_name : object_path}
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
@@ -198,7 +204,7 @@ class Connection(object):
         """Create a reboot task for a given device"""
         data = { "name": "reboot"}
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
@@ -206,7 +212,7 @@ class Connection(object):
         """Create a factoryReset task for a given device"""
         data = { "name": "factoryReset"}
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
@@ -214,21 +220,21 @@ class Connection(object):
         """Create a download task for a given device"""
         data = { "name": "download", "file": file_id, "filename": filename}
         try:
-            self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
+            return self.__request_post("/devices/" + requests.utils.quote(device_id) + "/tasks", data, conn_request)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
     def task_retry(self, task_id):
         "Retry a faulty task at the next inform"
         try:
-            self.__request_post("/tasks/" + task_id + "/retry", None)
+            return self.__request_post("/tasks/" + task_id + "/retry", None)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
     def task_delete(self, task_id):
         """Delete a Task for a given device"""
         try:
-            self.__request_delete("/tasks/" + task_id)
+            return self.__request_delete("/tasks/" + task_id)
         except requests.exceptions.HTTPError:
             raise ItemNotFoundError
 
