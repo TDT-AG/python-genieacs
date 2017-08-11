@@ -77,8 +77,6 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
-        data = r.json()
-        return data
 
     def __request_delete(self, url):
         request_url = self.base_url + url
@@ -87,8 +85,6 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
-        data = r.json()
-        return data
 
     ##### methods for devices #####
 
