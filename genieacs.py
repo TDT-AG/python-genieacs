@@ -51,8 +51,9 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
-        data = r.json()
-        return data
+        if r.text:
+            data = r.json()
+            return data
 
     def __request_post(self, url, data, conn_request=True):
         if conn_request:
@@ -64,8 +65,9 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
-        data = r.json()
-        return data
+        if r.text:
+            data = r.json()
+            return data
 
     def __request_put(self, url, data, headers=None):
         request_url = self.base_url + url
@@ -77,6 +79,9 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
+        if r.text:
+            data = r.json()
+            return data
 
     def __request_delete(self, url):
         request_url = self.base_url + url
@@ -85,6 +90,9 @@ class Connection(object):
             r.raise_for_status()
         except (requests.exceptions.ConnectionError, requests.exceptions.HTTPError):
             raise ConnectionError
+        if r.text:
+            data = r.json()
+            return data
 
     ##### methods for devices #####
 
