@@ -119,10 +119,13 @@ class Connection(object):
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
         data = self.__request_get("/devices" + "?query=" + quoted_id + "&projection=" + parameter_name)
         try:
-            value = data[0]
-            for part in parameter_name.split('.'):
-                value = value[part]
-            return value["_value"]
+            if parameter_name in ["_tags", "_lastInform"]:
+                return data[0][parameter_name]
+            else:
+                value = data[0]
+                for part in parameter_name.split('.'):
+                    value = value[part]
+                return value["_value"]
         except (IndexError, KeyError):
             return None
 
