@@ -114,6 +114,11 @@ class Connection(object):
         quoted_MAC = requests.utils.quote("{\"summary.mac\":\"" + device_MAC + "\"}", safe = '')
         return self.__request_get("/devices/" + "?query=" + quoted_MAC)
 
+    def device_get_by_serial(self, device_serial):
+        """Get all data of a device identified by its Serial"""
+        quoted_serial = requests.utils.quote("{\"InternetGatewayDevice.DeviceInfo.SerialNumber\":\"" + device_serial + "\"}", safe = '')
+        return self.__request_get("/devices/" + "?query=" + quoted_serial)
+
     def device_get_parameter(self, device_id, parameter_name):
         """Directly get the value of a given parameter from a given device"""
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
