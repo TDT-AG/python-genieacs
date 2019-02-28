@@ -124,7 +124,7 @@ class Connection(object):
         quoted_id = requests.utils.quote("{\"_id\":\"" + device_id + "\"}", safe = '')
         data = self.__request_get("/devices" + "?query=" + quoted_id + "&projection=" + parameter_name)
         try:
-            if parameter_name in ["_tags", "_lastInform"]:
+            if parameter_name in ["_tags", "_lastInform", "_registered", "_lastBootstrap", "_lastBoot"]:
                 return data[0][parameter_name]
             else:
                 value = data[0]
