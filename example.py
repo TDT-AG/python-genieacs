@@ -92,3 +92,8 @@ acs.file_delete("Firmware.img")
 
 # delete the device from the database
 acs.device_delete(device_id)
+
+# get IDs of all existing faults and delete all
+faults = acs.fault_get_all_IDs()
+for fault in faults:
+    acs.fault_delete(fault)

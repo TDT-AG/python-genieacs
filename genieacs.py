@@ -462,6 +462,24 @@ class Connection(object):
             raise InvalidRequestDataError
         return self.__request_get("/files/?query=" + requests.utils.quote(url + "}", safe = ''))
 
+    ##### methods for faults #####
+
+    def fault_get_all_IDs(self):
+        """Get IDs of all faults"""
+        jsondata = self.__request_get("/faults/" + "?projection=_id")
+        data = []
+        for fault in jsondata:
+            data.append(fault["_id"])
+        return data
+
+    def fault_delete(self, fault_id):
+        """Delete a given fault"""
+        quoted_id = requests.utils.quote(fault_id)
+        try:
+            self.__request_delete("/faults/" + quoted_id)
+        except requests.exceptions.HTTPError:
+            raise ItemNotFoundError
+
 class ConnectionError(Exception):
     def __str__(self):
         return "Could not (re-)connect to the ACS"
