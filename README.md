@@ -93,4 +93,5 @@ The following list contains all possible interactions with the GenieACS REST API
 #### Manage faults:
 
 * (list IDs of all faults)
-* (delete a fault)
+* (list faults filtered by device)
+* (delete a given fault)

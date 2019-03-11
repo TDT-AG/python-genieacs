@@ -472,6 +472,11 @@ class Connection(object):
             data.append(fault["_id"])
         return data
 
+    def fault_get_all(self, device_id):
+        """Get all existing faults for a given device"""
+        quoted_id = requests.utils.quote("{\"device\":\"" + device_id + "\"}", safe = '')
+        return self.__request_get("/faults/" + "?query=" + quoted_id)
+
     def fault_delete(self, fault_id):
         """Delete a given fault"""
         quoted_id = requests.utils.quote(fault_id)
