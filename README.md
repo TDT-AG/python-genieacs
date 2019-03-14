@@ -40,7 +40,7 @@ The following list contains all possible interactions with the GenieACS REST API
 
 #### Manage tasks:
 
-* (list tasks:)
+* (list all tasks)
   * (filtered by device)
 * (create a task for a given device)
   * (refreshObject)
@@ -93,5 +93,6 @@ The following list contains all possible interactions with the GenieACS REST API
 #### Manage faults:
 
 * (list IDs of all faults)
-* (list faults filtered by device)
+* (list all faults)
+  * (filtered by device)
 * (delete a given fault)
